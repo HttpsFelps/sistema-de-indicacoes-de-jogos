@@ -28,5 +28,3 @@ Este projeto é um sistema de indicação de jogos desenvolvido com **Spring Boo
 - ✅ Sistema de likes nas recomendações
 - ✅ Interface amigável com React
 - ✅ Integração entre front-end e back-end via API REST
-
----
