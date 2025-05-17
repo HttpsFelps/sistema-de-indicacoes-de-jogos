@@ -27,3 +27,51 @@ Este projeto é um sistema de indicação de jogos desenvolvido com **Spring Boo
 - ✅ Sistema de likes nas recomendações
 - ✅ Interface amigável com React
 - ✅ Integração entre front-end e back-end via API REST
+
+---
+
+## Modelagem UML de classe
+
+```Mermaid
+classDiagram
+    class Usuario {
+        +avaliarJogo(nomeJogo: String, nota: int): void
+        +comentarJogo(idJogo: int, comentario: String): void
+        +deletarComentario(idComentario: int): void
+        +editarComentario(idComentario: int, novoTexto: String): void
+        +criarConta(nomeUsuario: String, fotoPerfil: String, senha: String): void
+        +atualizarFotoPerfil(novaFoto: String): void
+        +indicarJogo(nomeJogo: String): void
+    }
+
+    class Moderador {
+        +ativarOuDesativarUsuario(nomeUsuario: String): void
+        +adicionarJogoAoCatalogo(nomeJogo: String, urlCapa: String, descricao: String, dataPublicacao: String): void
+        +removerJogoDoCatalogo(nomeJogo: String): void
+        +removerComentario(idComentario: int): void
+    }
+
+    class Jogo {
+        -nome: String
+        -descricao: String
+        -urlCapa: String
+        -dataPublicacao: String
+        +getDetalhes(): String
+    }
+
+    class Avaliacao {
+        -nota: int
+        -comentario: String
+        -autor: Usuario
+        -jogo: Jogo
+        +getResumo(): String
+    }
+
+    Usuario "1" --> "0..*" Avaliacao : escreve
+    Jogo "1" --> "0..*" Avaliacao : recebe
+    Moderador "1" --> "0..*" Usuario : gerencia
+    Moderador "1" --> "0..*" Jogo : modera
+
+```
+
+---
