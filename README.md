@@ -32,7 +32,7 @@ Este projeto é um sistema de indicação de jogos desenvolvido com **Spring Boo
 
 ## Modelagem UML de classe
 
-```Mermaid
+```mermaid
 classDiagram
     class Usuario {
         +avaliarJogo(nomeJogo: String, nota: int): void
