@@ -6,7 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,19 +17,26 @@ public class Jogo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+    @ManyToOne
+    @JoinColumn(name = "id_empresa_dev")
+    private Empresa desenvolvedora;
+    @ManyToOne
+    @JoinColumn(name = "id_empresa_pub")
+    private Empresa publicadora;
 	private String nome;
 	private String descricao;
 	private LocalDate data_lancamento;
 	@Lob
     private byte[] imagem;
 	
-	public Jogo() {
-		
-	}
 	
-	public Jogo(Long id, String nome, String descricao, LocalDate data_lancamento, byte[] imagem) {
+	public Jogo() {}
+	
+	public Jogo(Long id, String nome, String descricao, LocalDate data_lancamento, byte[] imagem, Empresa desenvolvedora, Empresa publicadora) {
 		super();
 		this.id = id;
+		this.desenvolvedora = desenvolvedora;
+		this.publicadora = publicadora;
 		this.nome = nome;
 		this.descricao = descricao;
 		this.data_lancamento = data_lancamento;
@@ -45,6 +54,21 @@ public class Jogo {
 	}
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+	public Empresa getDesenvolvedora() {
+		return desenvolvedora;
+	}
+
+	public void setDesenvolvedora(Empresa desenvolvedora) {
+		this.desenvolvedora = desenvolvedora;
+	}
+
+	public Empresa getPublicadora() {
+		return publicadora;
+	}
+
+	public void setPublicadora(Empresa publicadora) {
+		this.publicadora = publicadora;
 	}
 	public String getDescricao() {
 		return descricao;
