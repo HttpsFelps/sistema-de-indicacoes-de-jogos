@@ -3,6 +3,8 @@ package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +26,8 @@ public class Jogo {
     @JoinColumn(name = "id_empresa_pub")
     private Empresa publicadora;
 	private String nome;
+	@Enumerated(EnumType.STRING)
+    private Genero genero;
 	private String descricao;
 	private LocalDate data_lancamento;
 	@Lob
@@ -32,12 +36,13 @@ public class Jogo {
 	
 	public Jogo() {}
 	
-	public Jogo(Long id, String nome, String descricao, LocalDate data_lancamento, byte[] imagem, Empresa desenvolvedora, Empresa publicadora) {
+	public Jogo(Long id, String nome, String descricao, LocalDate data_lancamento, byte[] imagem, Empresa desenvolvedora, Empresa publicadora, Genero genero) {
 		super();
 		this.id = id;
 		this.desenvolvedora = desenvolvedora;
 		this.publicadora = publicadora;
 		this.nome = nome;
+		this.genero = genero;
 		this.descricao = descricao;
 		this.data_lancamento = data_lancamento;
 		this.imagem = imagem;
@@ -54,6 +59,13 @@ public class Jogo {
 	}
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+	public Genero getGenero() {
+		return genero;
+	}
+
+	public void setGenero(Genero genero) {
+		this.genero = genero;
 	}
 	public Empresa getDesenvolvedora() {
 		return desenvolvedora;

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.Projection.JogoSubstringProjection;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.Jogo;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.repository.JogoRepository;
 
@@ -23,9 +25,13 @@ public class CachingService {
     public Optional<Jogo> findById(Long id) {
         return repJ.findById(id);
     }
-
+    
+    @Cacheable(value = "JogoPorSubstring", key = "#substring")
+	public List<JogoSubstringProjection> buscaPorSubstring(String substring){
+		return repJ.buscaPorSubstring(substring);
+	}
 	
-	@CacheEvict(value = {"TodosJogosCacheable","JogoPorIdCacheable"}, allEntries = true)
+	@CacheEvict(value = {"TodosJogosCacheable","JogoPorIdCacheable","JogoPorSubstring"}, allEntries = true)
 	public void removerCache() {
 		System.out.println("Removendo cache");
 	}
