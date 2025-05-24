@@ -64,6 +64,27 @@ public class JogoController {
 		}
 	}
 	
+	public Jogo atualizaJogo(@PathVariable Long id, @RequestBody Jogo jogo_atualizado) {
+		Optional<Jogo> op = repJ.findById(id);
+		
+		if(op.isPresent()) {
+			Jogo jogo_existente = op.get();
+			jogo_existente.setNome(jogo_atualizado.getNome());
+			jogo_existente.setDescricao(jogo_atualizado.getDescricao());
+			jogo_existente.setData_lancamento(jogo_atualizado.getData_lancamento());
+			jogo_existente.setGenero(jogo_atualizado.getGenero());
+			jogo_existente.setImagem(jogo_atualizado.getImagem());
+			jogo_existente.setDesenvolvedora(jogo_atualizado.getDesenvolvedora());
+			jogo_existente.setPublicadora(jogo_atualizado.getPublicadora());
+			
+			repJ.save(jogo_existente);
+			
+			return jogo_existente;
+		}else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			}
+	}
+	
 	@GetMapping("/substring")
 	public List<JogoSubstringProjection> 
 	buscaPorSubstring(@RequestParam(value = "substring")
