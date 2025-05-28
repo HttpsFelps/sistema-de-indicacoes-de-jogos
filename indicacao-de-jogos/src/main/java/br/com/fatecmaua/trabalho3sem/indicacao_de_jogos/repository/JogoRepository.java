@@ -30,5 +30,4 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
 			+"   OR LOWER(pub.nome) LIKE LOWER(CONCAT('%', :sub , '%'));"
 	)
 	public List<JogoSubstringProjection> buscaPorSubstring(@Param("sub") String substring);
-
 }
