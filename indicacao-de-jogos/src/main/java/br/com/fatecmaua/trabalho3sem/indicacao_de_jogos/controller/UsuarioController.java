@@ -1,28 +1,55 @@
 package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.infra.security.TokenService;
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.AuthenticationDTO;
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.LoginResponseDTO;
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.RegisterDTO;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.Usuario;
-import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.service.UsuarioService;
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
+
 	@Autowired
-	private UsuarioService servU;
+	private AuthenticationManager authenticationManager;
 	
-	@PostMapping("/registrar")
-	public Usuario registrar(@RequestBody Usuario usuario) {
-		return servU.salvarUsuario(usuario);
-	}
+	@Autowired
+	private UsuarioRepository repU;
+	
+	@Autowired
+	private TokenService tokenService;
+	
 	@PostMapping("/login")
-	public String login(@RequestParam String email, @RequestParam String senha) {
-		boolean autenticado = servU.autenticar(email, senha);
-		return autenticado ? "Login bem sucedido!" : "Credenciais invalidadas, por favor tente novamente!";
+	public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
+		var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
+		var auth = this.authenticationManager.authenticate(usernamePassword);
+		
+		var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
+		
+		return ResponseEntity.ok(new LoginResponseDTO(token));
+	}
+	
+	@PostMapping("/registro")
+	public ResponseEntity registro(@RequestBody @Valid RegisterDTO data) {
+		if(this.repU.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
+		
+		String encryptPassword = new BCryptPasswordEncoder().encode(data.senha());
+		Usuario newUsuario = new Usuario(data.cargo(),data.nome_completo(), data.usuario(),data.email(), encryptPassword, data.dataNasc(), data.imagemUsuario());
+		
+		this.repU.save(newUsuario);
+		
+		return ResponseEntity.ok().build();
 	}
 }

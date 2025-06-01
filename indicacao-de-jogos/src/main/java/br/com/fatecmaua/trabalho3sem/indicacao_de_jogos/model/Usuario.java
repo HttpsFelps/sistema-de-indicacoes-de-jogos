@@ -1,9 +1,15 @@
 package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model;
 
 import java.time.LocalDate;
-
+import java.util.Collection;
+import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,11 +18,16 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="tb_usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
+	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String nome_Completo;
+	@Enumerated(EnumType.STRING)
+	private CargoUsuario cargo;
+	private String nomeCompleto;
 	private String usuario;
 	@Column(unique = true)
 	private String email;
@@ -26,14 +37,27 @@ public class Usuario {
 	private byte[] imagemUsuario;
 	
 	public Usuario() {}
-	
-	
-	
-	public Usuario(Long id, String nome_Completo, String usuario, String email, String senha, LocalDate dataNasc,
-			byte[] imagemUsuario) {
+
+
+	public Usuario(CargoUsuario cargo, String nomeCompleto, String usuario, String email, String senha,
+			LocalDate dataNasc, byte[] imagemUsuario) {
+		this.cargo = cargo;
+		this.nomeCompleto = nomeCompleto;
+		this.usuario = usuario;
+		this.email = email;
+		this.senha = senha;
+		this.dataNasc = dataNasc;
+		this.imagemUsuario = imagemUsuario;
+	}
+
+
+
+	public Usuario(Long id, String nomeCompleto, String usuario, String email, String senha, LocalDate dataNasc,
+			byte[] imagemUsuario, CargoUsuario cargo) {
 		super();
 		this.id = id;
-		this.nome_Completo = nome_Completo;
+		this.cargo = cargo;
+		this.nomeCompleto = nomeCompleto;
 		this.usuario = usuario;
 		this.email = email;
 		this.senha = senha;
@@ -44,9 +68,13 @@ public class Usuario {
 	public Long getId() {
 		return id;
 	}
+	
+	public CargoUsuario getCargo() {
+		return cargo;
+	}
 
-	public String getNome_Completo() {
-		return nome_Completo;
+	public String getNomeCompleto() {
+		return nomeCompleto;
 	}
 
 	public String getUsuario() {
@@ -72,9 +100,13 @@ public class Usuario {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public void setCargo(CargoUsuario cargo) {
+		this.cargo = cargo;
+	}
 
-	public void setNome_Completo(String nome_Completo) {
-		this.nome_Completo = nome_Completo;
+	public void setNomeCompleto(String nomeCompleto) {
+		this.nomeCompleto = nomeCompleto;
 	}
 
 	public void setUsuario(String usuario) {
@@ -96,5 +128,42 @@ public class Usuario {
 	public void setImagemUsuario(byte[] imagemUsuario) {
 		this.imagemUsuario = imagemUsuario;
 	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if(this.cargo == CargoUsuario.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+		else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+	}
+
+	@Override
+	public String getPassword() {
+		return senha;
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+	
+	@Override
+	public boolean isAccountNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+	    return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+	    return true;
+	}
+
 	
 }
