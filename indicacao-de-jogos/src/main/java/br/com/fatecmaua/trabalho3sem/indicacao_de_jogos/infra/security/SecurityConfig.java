@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/usuario/registro").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "rota").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/jogos/todos").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
