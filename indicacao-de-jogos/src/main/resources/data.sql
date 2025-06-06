@@ -30,34 +30,33 @@ SELECT 'God of War', 'Jogo de ação e aventura.', DATE '2018-04-20', NULL,
        (SELECT id FROM tb_empresa WHERE nome = 'Sony Interactive Entertainment'),
        'ACAO'
 WHERE NOT EXISTS (SELECT 1 FROM tb_jogos WHERE nome = 'God of War');
-
--- Inserir Favoritos (buscando os IDs de usuários e jogos dinamicamente)
-INSERT INTO tb_favoritos (fk_usuario, fk_jogo)
+-- Inserir empresas favoritas (buscando os IDs de usuários e empresas dinamicamente)
+INSERT INTO tb_empresasfavoritas (usuario, empresa)
 SELECT 
   (SELECT id FROM tb_usuarios WHERE usuario = 'lucas_s'),
-  (SELECT id FROM tb_jogos WHERE nome = 'The Legend of Zelda: Breath of the Wild')
+  (SELECT id FROM tb_empresa WHERE nome = 'Nintendo')
 WHERE NOT EXISTS (
-  SELECT 1 FROM tb_favoritos 
-  WHERE fk_usuario = (SELECT id FROM tb_usuarios WHERE usuario = 'lucas_s') 
-    AND fk_jogo = (SELECT id FROM tb_jogos WHERE nome = 'The Legend of Zelda: Breath of the Wild')
+  SELECT 1 FROM tb_empresasfavoritas 
+  WHERE usuario = (SELECT id FROM tb_usuarios WHERE usuario = 'lucas_s') 
+    AND empresa = (SELECT id FROM tb_empresa WHERE nome = 'Nintendo')
 );
 
-INSERT INTO tb_favoritos (fk_usuario, fk_jogo)
+INSERT INTO tb_empresasfavoritas (usuario, empresa)
 SELECT 
   (SELECT id FROM tb_usuarios WHERE usuario = 'lucas_s'),
-  (SELECT id FROM tb_jogos WHERE nome = 'Counter-Strike: 2')
+  (SELECT id FROM tb_empresa WHERE nome = 'Valve Corporation')
 WHERE NOT EXISTS (
-  SELECT 1 FROM tb_favoritos 
-  WHERE fk_usuario = (SELECT id FROM tb_usuarios WHERE usuario = 'lucas_s') 
-    AND fk_jogo = (SELECT id FROM tb_jogos WHERE nome = 'Counter-Strike: 2')
+  SELECT 1 FROM tb_empresasfavoritas 
+  WHERE usuario = (SELECT id FROM tb_usuarios WHERE usuario = 'lucas_s') 
+    AND empresa = (SELECT id FROM tb_empresa WHERE nome = 'Valve Corporation')
 );
 
-INSERT INTO tb_favoritos (fk_usuario, fk_jogo)
+INSERT INTO tb_empresasfavoritas (usuario, empresa)
 SELECT 
   (SELECT id FROM tb_usuarios WHERE usuario = 'ana_c'),
-  (SELECT id FROM tb_jogos WHERE nome = 'God of War')
+  (SELECT id FROM tb_empresa WHERE nome = 'Sony Interactive Entertainment')
 WHERE NOT EXISTS (
-  SELECT 1 FROM tb_favoritos 
-  WHERE fk_usuario = (SELECT id FROM tb_usuarios WHERE usuario = 'ana_c') 
-    AND fk_jogo = (SELECT id FROM tb_jogos WHERE nome = 'God of War')
+  SELECT 1 FROM tb_empresasfavoritas 
+  WHERE usuario = (SELECT id FROM tb_usuarios WHERE usuario = 'ana_c') 
+    AND empresa = (SELECT id FROM tb_empresa WHERE nome = 'Sony Interactive Entertainment')
 );

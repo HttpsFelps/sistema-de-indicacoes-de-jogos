@@ -12,7 +12,7 @@ import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.Jogo;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.repository.JogoRepository;
 
 @Service
-public class CachingService {
+public class JogoCachingService {
 	@Autowired
 	private JogoRepository repJ;
 	

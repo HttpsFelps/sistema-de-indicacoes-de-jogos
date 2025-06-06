@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.Projection.JogoSubstringProjection;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.Jogo;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.repository.JogoRepository;
-import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.service.CachingService;
+import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.service.JogoCachingService;
 
 @RestController
 @RequestMapping(value = "/jogos")
@@ -27,7 +27,7 @@ public class JogoController {
 	@Autowired
 	private JogoRepository repJ;
 	@Autowired
-	private CachingService cacheJ;
+	private JogoCachingService cacheJ;
 	
 	@GetMapping(value= "/todos")
 	public List<Jogo> retornaTodosJogos(){
@@ -80,7 +80,7 @@ public class JogoController {
 			jogo_existente.setPublicadora(jogo_atualizado.getPublicadora());
 			
 			repJ.save(jogo_existente);
-			
+			cacheJ.removerCache();
 			return jogo_existente;
 		}else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);

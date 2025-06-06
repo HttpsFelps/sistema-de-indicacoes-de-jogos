@@ -9,24 +9,24 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="tb_favoritos")
-public class Favoritos {
+@Table(name="tb_empresasfavoritas")
+public class EmpresasFavoritas {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne
-	@JoinColumn(name="fk_usuario")
-	private Usuario fk_usuario;
+	@JoinColumn(name="usuario")
+	private Usuario usuario;
 	@ManyToOne
-	@JoinColumn(name="fk_jogo")
-	private Jogo fk_jogo;
+	@JoinColumn(name="empresa")
+	private Empresa empresa;
 	
-	public Favoritos() {}
-	public Favoritos(Long id, Usuario fk_usuario, Jogo fk_jogo) {
+	public EmpresasFavoritas() {}
+	public EmpresasFavoritas(Long id, Usuario usuario, Empresa empresa) {
 		super();
 		this.id = id;
-		this.fk_usuario = fk_usuario;
-		this.fk_jogo = fk_jogo;
+		this.usuario = usuario;
+		this.empresa = empresa;
 	}
 	
 	public Long getId() {
@@ -35,16 +35,17 @@ public class Favoritos {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Usuario getFk_usuario() {
-		return fk_usuario;
+	public Usuario getusuario() {
+		return usuario;
 	}
-	public void setFk_usuario(Usuario fk_usuario) {
-		this.fk_usuario = fk_usuario;
+	public void setusuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
-	public Jogo getFk_jogo() {
-		return fk_jogo;
+	public Empresa getempresa() {
+		return empresa;
 	}
-	public void setFk_jogo(Jogo fk_jogo) {
-		this.fk_jogo = fk_jogo;
+	public void setempresa(Empresa empresa) {
+		this.empresa = empresa;
 	}
+
 }

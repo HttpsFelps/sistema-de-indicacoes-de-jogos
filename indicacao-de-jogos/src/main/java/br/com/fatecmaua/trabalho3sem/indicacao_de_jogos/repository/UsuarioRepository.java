@@ -7,4 +7,6 @@ import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 	UserDetails findByEmail(String email);
+	
+	
 }
