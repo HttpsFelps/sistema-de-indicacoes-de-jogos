@@ -21,6 +21,8 @@ public class JogoCachingService {
 		return repJ.findAll();
 	}
 	
+	
+	
     @Cacheable(value = "jogoPorId", key = "#id")
     public Optional<Jogo> findById(Long id) {
         return repJ.findById(id);
