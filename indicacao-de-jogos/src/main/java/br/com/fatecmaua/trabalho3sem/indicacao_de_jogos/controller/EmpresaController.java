@@ -1,10 +1,15 @@
 package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,12 +18,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.Projection.EmpresaSubstringProjection;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.Empresa;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.EmpresasFavoritas;
@@ -60,20 +65,59 @@ public class EmpresaController {
 		}
 	}
 	
-	@PostMapping(value = "/novo")
-	public ResponseEntity<Empresa> inserirJogo(@RequestBody Empresa empresa) {
-	    Empresa jogoSalvo = repE.save(empresa);
+	@PostMapping(value = "/novo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> inserirEmpresa(@RequestParam("empresa") String empresaJson, @RequestParam(value = "file", required = false) MultipartFile arquivo) {
+		ObjectMapper mapper = new ObjectMapper();
+	    mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+	    Empresa empresa = null;
+	    
+	    try {
+	        empresa = mapper.readValue(empresaJson, Empresa.class);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body("Erro ao desserializar JSON: " + e.getMessage());
+	    }
+	    if (repE.findByNome(empresa.getNome()).isPresent()) {
+	        return ResponseEntity
+	            .status(HttpStatus.CONFLICT)
+	            .body("Já existe uma empresa com esse nome.");
+	    }
+
+	    Empresa empresaSalva = repE.save(empresa);
+	    
+	    try {
+	        if (arquivo != null && !arquivo.isEmpty()) {
+	            byte[] bytes = arquivo.getBytes();
+	            String id = Long.toString(empresa.getId());
+	            
+	            Path pastaImagens = Paths.get("imagens").toAbsolutePath();
+	            
+	            
+	            Path caminhoImagem = pastaImagens.resolve(empresa.getNome()+id+arquivo.getOriginalFilename());
+	            Files.write(caminhoImagem, bytes);
+
+	            empresaSalva.setNomeImagem(empresa.getNome()+id + arquivo.getOriginalFilename());
+	            empresaSalva = repE.save(empresaSalva);
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+
+
 	    cacheE.removerCache();
-	    return ResponseEntity.status(HttpStatus.CREATED).body(jogoSalvo);
+	    return ResponseEntity.status(HttpStatus.CREATED).body(empresaSalva);
 	}
+
 	
 	@DeleteMapping("/deletar/{id}")
-	public Empresa removerJogo(@PathVariable Long id) {
+	public Empresa removerEmpresa(@PathVariable Long id) {
 		Optional<Empresa> op = repE.findById(id);
 		
 		if(op.isPresent()) {
 			Empresa empresa = op.get();
 			repE.deleteById(id);
+			repEF.deleteByEmpresa(empresa);
 			cacheE.removerCache();
 			return empresa;
 		} else {
@@ -81,23 +125,58 @@ public class EmpresaController {
 		}
 	}
 	
-	@PutMapping(value = "/atualiza/{id}")
-	public Empresa atualizaJogo(@PathVariable Long id, @RequestBody Empresa empresa_atualizada) {
+	@PutMapping(value = "/atualizar/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Empresa> atualizaEmpresa(@PathVariable Long id, @RequestParam("empresa") String empresaJson, @RequestParam(value = "file", required = false) MultipartFile arquivo) {
 		Optional<Empresa> op = repE.findById(id);
 		
-		if(op.isPresent()) {
-			Empresa empresa_existente = op.get();
-			empresa_existente.setNome(empresa_atualizada.getNome());
-			empresa_existente.setPais_origem(empresa_existente.getPais_origem());
-			empresa_existente.setData_fundacao(empresa_existente.getData_fundacao());
-			
-			
-			repE.save(empresa_existente);
-			cacheE.removerCache();
-			return empresa_existente;
-		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-			}
+	    if (op.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	    }
+
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+	    Empresa empresaAtualizada;
+	    try {
+	    	empresaAtualizada = mapper.readValue(empresaJson, Empresa.class);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().build();
+	    }
+	    
+
+	    Empresa empresaExistente = op.get();
+
+	    // Atualiza campos
+	    empresaExistente.setNome(empresaAtualizada.getNome());
+	    empresaExistente.setPais_origem(empresaAtualizada.getPais_origem());
+	    empresaExistente.setData_fundacao(empresaAtualizada.getData_fundacao());
+		
+	    Empresa empresaSalva = repE.save(empresaExistente);
+	    
+	 // Salva arquivo se existir
+	    if (arquivo != null && !arquivo.isEmpty()) {
+	        try {
+	            byte[] bytes = arquivo.getBytes();
+	            String idString = Long.toString(id);
+
+	            Path pastaImagens = Paths.get("imagens").toAbsolutePath();
+
+	            Path caminhoImagem = pastaImagens.resolve(empresaExistente.getNome()+id+arquivo.getOriginalFilename());
+	            Files.write(caminhoImagem, bytes);
+	            
+	            empresaExistente.setNomeImagem(empresaExistente.getNome()+idString + arquivo.getOriginalFilename());
+	            empresaSalva = repE.save(empresaExistente);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	        }
+	    }
+
+	    
+
+	    cacheE.removerCache();
+	    return ResponseEntity.ok(empresaSalva);
 	}
 	
 	@GetMapping("/substring")
@@ -113,7 +192,7 @@ public class EmpresaController {
 	@PostMapping("/seguir/{id}")
     public ResponseEntity<String> seguirEmpresa(@PathVariable Long id, 
                                 @AuthenticationPrincipal UserDetails userDetails) {
-		String email = userDetails.getUsername(); // Isso pega o email, que foi o que você colocou no token
+		String email = userDetails.getUsername();
         Usuario usuario = (Usuario) repU.findByEmail(email);
         Empresa empresa = repE.findById(id).get();
         boolean seguindo = repEF.existsByUsuarioAndEmpresa(usuario, empresa);
@@ -139,7 +218,7 @@ public class EmpresaController {
 		return cacheE.findAllFavoritasByUser(id);
 	}
 	
-	@GetMapping("/todas/seguidas/pormim")
+	@GetMapping("/todas/seguidas-por-mim")
 	public List<EmpresasFavoritas> todasSeguidasPorLogado(@AuthenticationPrincipal UserDetails userDetails){
         Usuario usuario = (Usuario) repU.findByEmail(userDetails.getUsername());
         Long id = usuario.getId();

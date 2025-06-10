@@ -10,21 +10,21 @@ MERGE INTO tb_usuarios (usuario, nome_completo, data_nasc, imagem_usuario) KEY(u
   ('ana_c', 'Ana Costa', DATE '1995-03-22', NULL);
 
 -- Inserir Jogos (buscando os IDs das empresas por nome)
-INSERT INTO tb_jogos (nome, descricao, data_lancamento, imagem, id_empresa_dev, id_empresa_pub, genero)
+INSERT INTO tb_jogos (nome, descricao, data_lancamento, nome_imagem, id_empresa_dev, id_empresa_pub, genero)
 SELECT 'The Legend of Zelda: Breath of the Wild', 'Jogo de aventura em mundo aberto.', DATE '2017-03-03', NULL,
        (SELECT id FROM tb_empresa WHERE nome = 'Nintendo'),
        (SELECT id FROM tb_empresa WHERE nome = 'Nintendo'),
        'AVENTURA'
 WHERE NOT EXISTS (SELECT 1 FROM tb_jogos WHERE nome = 'The Legend of Zelda: Breath of the Wild');
 
-INSERT INTO tb_jogos (nome, descricao, data_lancamento, imagem, id_empresa_dev, id_empresa_pub, genero)
+INSERT INTO tb_jogos (nome, descricao, data_lancamento, nome_imagem, id_empresa_dev, id_empresa_pub, genero)
 SELECT 'Counter-Strike: 2', 'Jogo de tiro em primeira pessoa.', DATE '2023-09-27', NULL,
        (SELECT id FROM tb_empresa WHERE nome = 'Valve Corporation'),
        (SELECT id FROM tb_empresa WHERE nome = 'Valve Corporation'),
        'FPS'
 WHERE NOT EXISTS (SELECT 1 FROM tb_jogos WHERE nome = 'Counter-Strike: 2');
 
-INSERT INTO tb_jogos (nome, descricao, data_lancamento, imagem, id_empresa_dev, id_empresa_pub, genero)
+INSERT INTO tb_jogos (nome, descricao, data_lancamento, nome_imagem, id_empresa_dev, id_empresa_pub, genero)
 SELECT 'God of War', 'Jogo de ação e aventura.', DATE '2018-04-20', NULL,
        (SELECT id FROM tb_empresa WHERE nome = 'Sony Interactive Entertainment'),
        (SELECT id FROM tb_empresa WHERE nome = 'Sony Interactive Entertainment'),

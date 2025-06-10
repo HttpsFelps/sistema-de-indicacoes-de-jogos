@@ -17,17 +17,33 @@ public class Empresa {
 	private String nome;
 	private String pais_origem;
 	private LocalDate data_fundacao;
+    private String nomeImagem;
+
 	
 	public Empresa() {}
 	
-	public Empresa(Long id, String nome, String pais_origem, LocalDate data_fundacao) {
+	public Empresa(Long id, String nome, String pais_origem, LocalDate data_fundacao, String nomeImagem) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.pais_origem = pais_origem;
 		this.data_fundacao = data_fundacao;
+		this.nomeImagem = nomeImagem;
+
 	}
 	
+	public String getNomeImagem() {
+		return nomeImagem;
+	}
+
+	public void setNomeImagem(String nomeImagem) {
+		this.nomeImagem = nomeImagem;
+	}
+
+	public Empresa(Long id) {
+		this.id = id;
+	}
+
 	public String getPais_origem() {
 		return pais_origem;
 	}

@@ -1,5 +1,6 @@
 package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.repository;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,6 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
 			+"   OR LOWER(pub.nome) LIKE LOWER(CONCAT('%', :sub , '%'));"
 	)
 	public List<JogoSubstringProjection> buscaPorSubstring(@Param("sub") String substring);
+
+	public Optional<Jogo> findByNome(String nome);
 }

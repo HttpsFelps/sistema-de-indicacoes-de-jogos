@@ -18,4 +18,5 @@ public interface EmpresasFavoritasRepository extends JpaRepository<EmpresasFavor
 
 	void deleteByUsuarioAndEmpresa(Usuario usuario, Empresa empresa);
 	
+	void deleteByEmpresa(Empresa empresa);
 }

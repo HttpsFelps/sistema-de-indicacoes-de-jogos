@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -30,13 +29,12 @@ public class Jogo {
     private Genero genero;
 	private String descricao;
 	private LocalDate data_lancamento;
-	@Lob
-    private byte[] imagem;
+    private String nomeImagem;
 	
 	
 	public Jogo() {}
 	
-	public Jogo(Long id, String nome, String descricao, LocalDate data_lancamento, byte[] imagem, Empresa desenvolvedora, Empresa publicadora, Genero genero) {
+	public Jogo(Long id, String nome, String descricao, LocalDate data_lancamento, String nomeImagem, Empresa desenvolvedora, Empresa publicadora, Genero genero) {
 		super();
 		this.id = id;
 		this.desenvolvedora = desenvolvedora;
@@ -45,7 +43,7 @@ public class Jogo {
 		this.genero = genero;
 		this.descricao = descricao;
 		this.data_lancamento = data_lancamento;
-		this.imagem = imagem;
+		this.nomeImagem = nomeImagem;
 	}
 	
 	public Long getId() {
@@ -94,10 +92,10 @@ public class Jogo {
 	public void setData_lancamento(LocalDate data_lancamento) {
 		this.data_lancamento = data_lancamento;
 	}
-	public byte[] getImagem() {
-		return imagem;
+	public String getNomeImagem() {
+		return nomeImagem;
 	}
-	public void setImagem(byte[] imagem) {
-		this.imagem = imagem;
+	public void setNomeImagem(String nomeImagem) {
+		this.nomeImagem = nomeImagem;
 	}
 }
