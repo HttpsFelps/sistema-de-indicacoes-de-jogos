@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,7 +65,7 @@ public class AvaliacaoController {
     public ResponseEntity<?> criarAvaliacao(@RequestBody AvaliacaoDto dto) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(dto.getIdUsuario());
         Optional<Jogo> jogoOpt = jogoRepository.findById(dto.getIdJogo());
-
+        
         if (usuarioOpt.isEmpty() || jogoOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Usuário ou Jogo não encontrado");
         }
@@ -93,7 +95,8 @@ public class AvaliacaoController {
                 "total", total,
                 "recomendam", recomendam,
                 "naoRecomendam", naoRecomendam,
-                "percentualRecomendam", total > 0 ? (100.0 * recomendam / total) : 0
+                "percentualRecomendam", total > 0 ? (100.0 * recomendam / total) : 0,
+                "percentualNaoRecomendam", total > 0 ? (100.0 * naoRecomendam / total) : 0
             );
         }
         return Map.of("erro", "Jogo não encontrado");
@@ -109,4 +112,17 @@ public class AvaliacaoController {
         List<Avaliacao> avaliacoes = avaliacaoRepository.findByUsuario(usuarioOpt.get());
         return ResponseEntity.ok(avaliacoes);
     }
+    
+    @DeleteMapping("/deletar/{id}")
+	public ResponseEntity<?> removerAvaliacao(@PathVariable Long id) {
+		Optional<Avaliacao> op = avaliacaoRepository.findById(id);
+		
+		if(op.isPresent()) {
+			Avaliacao avaliacao = op.get();
+			avaliacaoRepository.deleteById(id);
+			return ResponseEntity.ok(avaliacao);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Erro", "Nenhuma avaliação encontrada"));
+		}
+	}
 }

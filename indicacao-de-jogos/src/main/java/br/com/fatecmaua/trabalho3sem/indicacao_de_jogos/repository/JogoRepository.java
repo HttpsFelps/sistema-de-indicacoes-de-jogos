@@ -33,4 +33,9 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
 	public List<JogoSubstringProjection> buscaPorSubstring(@Param("sub") String substring);
 
 	public Optional<Jogo> findByNome(String nome);
+
+	public List<Jogo> findByGeneroIn(List<String> generos);
+	
+	List<Jogo> findByGeneroInAndIdNotIn(List<String> generos, List<Long> idsParaExcluir);
+
 }
