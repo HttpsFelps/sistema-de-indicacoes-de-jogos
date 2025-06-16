@@ -1,8 +1,10 @@
 package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,18 +45,24 @@ public class UsuarioController {
 	
 	
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
-		var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
-		var auth = this.authenticationManager.authenticate(usernamePassword);
+	public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
+		if (repU.findByEmail(data.email()) != null) {
+			var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
+			var auth = this.authenticationManager.authenticate(usernamePassword);
+			
+			var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
+			
+			return ResponseEntity.ok(new LoginResponseDTO(token));
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("Erro", "Usuário não encontrado"));
+		}
 		
-		var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
-		
-		return ResponseEntity.ok(new LoginResponseDTO(token));
 	}
 	
 	@PostMapping("/registro")
 	public ResponseEntity<?> registro(@RequestBody @Valid RegisterDTO data) {
-		if(this.repU.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
+		if(this.repU.findByEmail(data.email()) != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Erro", "Usuário já registrado"));
 		
 		String encryptPassword = new BCryptPasswordEncoder().encode(data.senha());
 		Usuario newUsuario = new Usuario(data.cargo(),data.nome_completo(), data.usuario(),data.email(), encryptPassword, data.dataNasc(), data.imagemUsuario());

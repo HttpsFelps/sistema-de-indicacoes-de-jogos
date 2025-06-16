@@ -50,7 +50,7 @@ public class EmpresaController {
 	@Autowired
 	EmpresasFavoritasRepository repEF;
 	
-	@GetMapping(value= "/todos")
+	@GetMapping(value= "/todas")
 	public List<Empresa> retornaTodasEmpresas(){
 		return cacheE.findAll();
 	}
