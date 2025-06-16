@@ -2,7 +2,6 @@ package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.controller;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.Projection.UsuarioSubstringProjection;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.infra.security.TokenService;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.AuthenticationDTO;
@@ -75,16 +73,29 @@ public class UsuarioController {
 	
 	
 	@GetMapping("/todos")
-	public List<Usuario> retornaTodosusuarios(){
-	    return cacheU.findAll();  
-	}
+    public ResponseEntity<?> retornaTodosusuarios() {
+        List<Usuario> usuarios = cacheU.findAll();
+
+        if (usuarios.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("Erro", "Nenhum usuário encontrado"));
+        }
+
+        return ResponseEntity.ok(usuarios);
+    }
 	
 	@GetMapping("/substring")
-	public List<UsuarioSubstringProjection> 
+	public ResponseEntity<?> 
 	buscaPorSubstring(@RequestParam(value = "substring")
 	String substring){
-		
-		return cacheU.buscaPorSubstring(substring);
+		List<UsuarioSubstringProjection> usuarios = cacheU.buscaPorSubstring(substring);
+
+        if (usuarios.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("Erro", "Nenhum usuário encontrado com esse trecho"));
+        }
+
+        return ResponseEntity.ok(usuarios);
 		
 	}
 

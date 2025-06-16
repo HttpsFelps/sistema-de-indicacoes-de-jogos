@@ -5,8 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,17 +51,25 @@ public class EmpresaController {
 	EmpresasFavoritasRepository repEF;
 	
 	@GetMapping(value= "/todas")
-	public List<Empresa> retornaTodasEmpresas(){
-		return cacheE.findAll();
-	}
+	public ResponseEntity<?> retornaTodasEmpresas(){
+		List<Empresa> empresa = cacheE.findAll();
+
+        if (empresa.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("Erro", "Nenhuma empresa encontrada"));
+        }
+
+        return ResponseEntity.ok(empresa);
+    }
+	
 	
 	@GetMapping(value="/{id}")
-	public Empresa retornaEmpresa(@PathVariable Long id) {
+	public ResponseEntity<?> retornaEmpresa(@PathVariable Long id) {
 		Optional<Empresa> op = cacheE.findById(id);
 		if(op.isPresent()) {
-			return op.get();
+			return ResponseEntity.ok(op.get());
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Erro", "Nenhuma empresa encontrada"));
 		}
 	}
 	
@@ -111,7 +119,7 @@ public class EmpresaController {
 
 	
 	@DeleteMapping("/deletar/{id}")
-	public Empresa removerEmpresa(@PathVariable Long id) {
+	public ResponseEntity<?> removerEmpresa(@PathVariable Long id) {
 		Optional<Empresa> op = repE.findById(id);
 		
 		if(op.isPresent()) {
@@ -119,9 +127,9 @@ public class EmpresaController {
 			repE.deleteById(id);
 			repEF.deleteByEmpresa(empresa);
 			cacheE.removerCache();
-			return empresa;
+			return ResponseEntity.ok(empresa);
 		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Erro", "Nenhuma empresa encontrada"));
 		}
 	}
 	
