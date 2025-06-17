@@ -34,6 +34,8 @@ public class Usuario implements UserDetails {
 	private String senha;
 	private LocalDate dataNasc;
     private String nomeImagem;
+    @Column(nullable = true)
+    private Boolean ativo = true;
 	
 	public Usuario() {}
 
@@ -71,6 +73,10 @@ public class Usuario implements UserDetails {
 	public CargoUsuario getCargo() {
 		return cargo;
 	}
+	
+	public Boolean isAtivo() {
+        return ativo;
+    }
 
 	public String getNomeCompleto() {
 		return nomeCompleto;
@@ -96,6 +102,10 @@ public class Usuario implements UserDetails {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 	
 	public void setCargo(CargoUsuario cargo) {
 		this.cargo = cargo;
@@ -164,7 +174,7 @@ public class Usuario implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-	    return true;
+	    return ativo;
 	}
 
 	

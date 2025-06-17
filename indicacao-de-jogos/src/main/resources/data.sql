@@ -5,9 +5,9 @@ MERGE INTO tb_empresa (nome, pais_origem, data_fundacao) KEY(nome) VALUES
   ('Valve Corporation', 'Estados Unidos', DATE '1996-08-24');
 
 -- Inserir Usuários
-MERGE INTO tb_usuarios (usuario, nome_completo, data_nasc, imagem_usuario) KEY(usuario) VALUES 
-  ('lucas_s', 'Lucas Silva', DATE '2000-05-15', NULL),
-  ('ana_c', 'Ana Costa', DATE '1995-03-22', NULL);
+MERGE INTO tb_usuarios (usuario, nome_completo, data_nasc) KEY(usuario) VALUES 
+  ('lucas_s', 'Lucas Silva', DATE '2000-05-15'),
+  ('ana_c', 'Ana Costa', DATE '1995-03-22');
 
 -- Inserir Jogos (buscando os IDs das empresas por nome)
 INSERT INTO tb_jogos (nome, descricao, data_lancamento, nome_imagem, id_empresa_dev, id_empresa_pub, genero)

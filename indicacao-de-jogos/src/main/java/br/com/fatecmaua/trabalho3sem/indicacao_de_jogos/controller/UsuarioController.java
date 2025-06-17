@@ -7,11 +7,14 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.Projection.UsuarioSubstringProjection;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.infra.security.TokenService;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.model.AuthenticationDTO;
@@ -54,18 +59,23 @@ public class UsuarioController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
 		if (repU.findByEmail(data.email()) != null) {
-			var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
-			var auth = this.authenticationManager.authenticate(usernamePassword);
-			
-			var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
-			
-			return ResponseEntity.ok(new LoginResponseDTO(token));
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("Erro", "Usuário não encontrado"));
-		}
-		
+			try {
+		        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
+		        var auth = this.authenticationManager.authenticate(usernamePassword);
+	
+		        var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
+	
+		        return ResponseEntity.ok(new LoginResponseDTO(token));
+		    } catch (BadCredentialsException e) {
+		        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+		                .body(Map.of("Erro", "Email ou senha incorretos"));
+		        }
+			} else{
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body(Map.of("Erro", "Usuário não encontrado"));
+	    }
 	}
+
 	
 	@PostMapping("/registro")
 	public ResponseEntity<?> registro(@RequestBody @Valid RegisterDTO data) {
@@ -168,6 +178,21 @@ public class UsuarioController {
 	    cacheU.removerCache();
 	    return ResponseEntity.ok(usuarioSalvo);
 	}
+	
+	@PutMapping("/{id}/alternar-atividade")
+	public ResponseEntity<?> alternarAtividade(@PathVariable Long id) {
+	    Optional<Usuario> optUsuario = repU.findById(id);
+	    if (optUsuario.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", "Usuário não encontrado"));
+	    }
+
+	    Usuario usuario = optUsuario.get();
+	    usuario.setAtivo(!usuario.isAtivo()); // alterna o status
+	    repU.save(usuario);
+
+	    return ResponseEntity.ok(Map.of("mensagem", "Atividade do usuário atualizada", "ativo", usuario.isAtivo()));
+	}
+
 	
 	
 	
