@@ -33,27 +33,26 @@ public class Usuario implements UserDetails {
 	private String email;
 	private String senha;
 	private LocalDate dataNasc;
-	@Lob
-	private byte[] imagemUsuario;
+    private String nomeImagem;
 	
 	public Usuario() {}
 
 
 	public Usuario(CargoUsuario cargo, String nomeCompleto, String usuario, String email, String senha,
-			LocalDate dataNasc, byte[] imagemUsuario) {
+			LocalDate dataNasc, String nomeImagem) {
 		this.cargo = cargo;
 		this.nomeCompleto = nomeCompleto;
 		this.usuario = usuario;
 		this.email = email;
 		this.senha = senha;
 		this.dataNasc = dataNasc;
-		this.imagemUsuario = imagemUsuario;
+		this.nomeImagem = nomeImagem;
 	}
 
 
 
 	public Usuario(Long id, String nomeCompleto, String usuario, String email, String senha, LocalDate dataNasc,
-			byte[] imagemUsuario, CargoUsuario cargo) {
+			String nomeImagem, CargoUsuario cargo) {
 		super();
 		this.id = id;
 		this.cargo = cargo;
@@ -62,7 +61,7 @@ public class Usuario implements UserDetails {
 		this.email = email;
 		this.senha = senha;
 		this.dataNasc = dataNasc;
-		this.imagemUsuario = imagemUsuario;
+		this.nomeImagem = nomeImagem;
 	}
 
 	public Long getId() {
@@ -93,9 +92,6 @@ public class Usuario implements UserDetails {
 		return dataNasc;
 	}
 
-	public byte[] getImagemUsuario() {
-		return imagemUsuario;
-	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -125,9 +121,15 @@ public class Usuario implements UserDetails {
 		this.dataNasc = dataNasc;
 	}
 
-	public void setImagemUsuario(byte[] imagemUsuario) {
-		this.imagemUsuario = imagemUsuario;
+	public String getNomeImagem() {
+		return nomeImagem;
 	}
+
+
+	public void setNomeImagem(String nomeImagem) {
+		this.nomeImagem = nomeImagem;
+	}
+
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

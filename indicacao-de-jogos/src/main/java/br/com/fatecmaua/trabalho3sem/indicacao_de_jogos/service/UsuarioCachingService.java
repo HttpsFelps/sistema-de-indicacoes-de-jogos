@@ -1,6 +1,7 @@
 package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,9 +26,15 @@ public class UsuarioCachingService {
 	public List<UsuarioSubstringProjection> buscaPorSubstring(String substring){
 		return repU.buscaPorSubstring(substring);
 	}
+
+	@Cacheable("usuarioPorId") 
+	public Optional<Usuario> findById(Long id) {
+		return repU.findById(id); 
+	}
 	
-	@CacheEvict(value = {"TodosUsuarios", "UsuarioPorSubstring"}, allEntries = true)
+	@CacheEvict(value = {"TodosUsuarios", "UsuarioPorSubstring", "usuarioPorId"}, allEntries = true)
 	public void removerCache() {
 		System.out.println("Removendo cache");
 	}
+	
 }

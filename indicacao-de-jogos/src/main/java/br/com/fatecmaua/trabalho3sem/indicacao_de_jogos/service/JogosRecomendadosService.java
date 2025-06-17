@@ -2,7 +2,6 @@ package br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.service;
 
 import java.util.Comparator;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.fatecmaua.trabalho3sem.indicacao_de_jogos.Projection.GeneroContagemProjection;
