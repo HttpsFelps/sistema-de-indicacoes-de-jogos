@@ -10,14 +10,7 @@ Este projeto é um sistema de indicação de jogos desenvolvido com **Spring Boo
 - Spring Boot
 - Spring Web
 - Spring Data JPA
-- Banco de Dados: H2 / MySQL
-
-### Front-end (React)
-- React.js
-- Axios
-- React Router
-- Bootstrap / Tailwind CSS
-
+- Banco de Dados: H2
 ---
 
 ## 🛠️ Funcionalidades
